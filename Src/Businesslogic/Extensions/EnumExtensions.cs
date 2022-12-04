@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Businesslogic.Extensions
@@ -19,6 +20,14 @@ namespace Businesslogic.Extensions
             var memInfo = type.GetMember(enumVal.ToString());
             var attributes = memInfo[0].GetCustomAttributes(typeof(T), false);
             return (attributes.Length > 0) ? (T)attributes[0] : null;
+        }
+
+        public static IEnumerable<IEnumerable<T>> Batch<T>(this IEnumerable<T> items,
+                                                       int maxItems)
+        {
+            return items.Select((item, inx) => new { item, inx })
+                        .GroupBy(x => x.inx / maxItems)
+                        .Select(g => g.Select(x => x.item));
         }
     }
 }
